@@ -1,6 +1,6 @@
 
 package de.vogella.mysql.fisrt.test;
-import de.vogella.mysql.fisrt.MySQLAcces;
+import de.vogella.mysql.fisrt.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,12 +9,17 @@ import java.sql.SQLException;
 
 
 import de.vogella.mysql.fisrt.MySQLAcces;
+import org.w3c.dom.UserDataHandler;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        MySQLAcces dao = new MySQLAcces();
-        dao.readDataBase();
+        UsersDAO dao = new UsersDAOImpl();
+        dao.addUSer("guillermo","man ");
+
+
     }
+
+
 
 }
 
@@ -39,3 +44,4 @@ public class Main {
         }
     }
 }*/
+
