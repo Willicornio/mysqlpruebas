@@ -1,6 +1,10 @@
 package de.vogella.mysql.fisrt;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.PublicKey;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,9 +13,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.logging.Logger;
 
 public class Session {
 
+    Logger log = Logger.getLogger(Session.class.getName());
     Connection session = null;
     Statement statement = null;
     PreparedStatement preparedStatement = null;
@@ -48,57 +54,39 @@ public class Session {
 
     }
 
+    public void save (Object o) throws SQLException, IntrospectionException, InvocationTargetException, IllegalAccessException {
+        statement = session.createStatement();
+        String preparedQuery = null;
+        String query = null;
+        int contador = 1;
+
+        String table = o.getClass().getSimpleName();
+        log.info(table);
+        Field[] fields = o.getClass().getDeclaredFields();
 
 
-
-    public void save (Object o) throws Exception{
-
-
-            statement = session.createStatement();
-            // Result set get the result of the SQL query
-            String a;
-            a = o.getClass().getSimpleName();
-
-            System.out.println(a);
-
-            Field[] fields = o.getClass().getDeclaredFields();
-
-
-            for (Field f: fields) {
-                System.out.println(f.getName());
+        for(int i = 1; i <= fields.length; i++){
+            if(i == 1 || i != fields.length){
+                preparedQuery = "?,";
+            }else {
+                preparedQuery += "?";
             }
-
-        for (Field f: fields) {
-            System.out.println("?,");
         }
 
-            /*if ( a == "Usuario"){
+        query = "INSERT INTO " + table + " VALUES (" + preparedQuery +")";
+        log.info(query);
 
-                String nombre;
+        PreparedStatement ps =  this.session.prepareStatement(query);
 
+        for(Field f : fields){
+            ps.setString(contador, new PropertyDescriptor(fields[contador - 1].getName(),o.getClass()).getReadMethod().invoke(o).toString() );
+            contador++;
 
-
-                e.getName();
-
-                preparedStatement = session
-                        .prepareStatement("insert into  feedback." + a +"values (default, ?, ?)");
-                // "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
-                // Parameters start with 1
-                preparedStatement.setString(1, Nombre);
-                preparedStatement.setString(2, apellido);
-                preparedStatement.executeUpdate();
-            }
-
-
-        }catch (Exception fatal){
-            throw fatal;
         }
 
-
-    }
-
-
-
+        ps.executeUpdate();
+        log.info("OK!");
+        ps.close();
 
     }
 
@@ -106,10 +94,7 @@ public class Session {
 
 
 
-
-*/
-        }
-    }
+}
 
 
 
